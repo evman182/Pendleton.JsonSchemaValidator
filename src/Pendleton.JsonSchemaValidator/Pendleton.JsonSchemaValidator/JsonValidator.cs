@@ -32,8 +32,8 @@ namespace Pendleton.JsonSchemaValidator
                     new LibraryFile("nlohmann_json_schema_validator.dll",
                         accessor.Binary("nlohmann_json_schema_validator.dll"))),
                 new LibraryItem(Platform.Linux, Bitness.x64,
-                    new LibraryFile("nlohmann_json_schema_validator.so",
-                        accessor.Binary("nlohmann_json_schema_validator.so"))));
+                    new LibraryFile("libnlohmann_json_schema_validator.so",
+                        accessor.Binary("libnlohmann_json_schema_validator.so"))));
 
             libManager.LoadNativeLibrary();
         }
