@@ -103,6 +103,7 @@ stages:
             push $(Build.ArtifactStagingDirectory)/**.nupkg
             -s $(NuGetSourceServerUrl)
             -k $(NuGetSourceServerApiKey)
+            -n true
   - job: "Build_Linux"
     pool: 
       vmImage: 'ubuntu-18.04'
