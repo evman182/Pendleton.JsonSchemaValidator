@@ -94,6 +94,12 @@ stages:
           packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
           nuGetFeedType: 'internal'
           publishVstsFeed: '7f4acbfe-6409-4555-962b-beaf9add995a/dd0a7f4e-a22a-4995-bf7e-250f97daaff2'
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+          nuGetFeedType: 'external'
+          publishFeedCredentials: 'pendleton nuget.org'
   - job: "Build_Linux"
     pool: 
       vmImage: 'ubuntu-18.04'
