@@ -42,7 +42,7 @@ stages:
       artifact: LinuxWrapperBinary
 - stage: "Build_Pendleton_JsonSchemaValidator"
   jobs:
-  - job: "Build"
+  - job: "Build_Windows_And_Push"
     pool: 
       vmImage: 'windows-2019'
     steps:
@@ -76,7 +76,7 @@ stages:
         displayName: "Run Tests"
         inputs:
           command: 'test'
-          projects: '**/*.cspro'
+          projects: '**/*.csproj'
       - task: DotNetCoreCLI@2
         displayName: "Create Package"
         inputs:
@@ -94,3 +94,38 @@ stages:
           packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
           nuGetFeedType: 'internal'
           publishVstsFeed: '7f4acbfe-6409-4555-962b-beaf9add995a/dd0a7f4e-a22a-4995-bf7e-250f97daaff2'
+  - job: "Build_Linux"
+    pool: 
+      vmImage: 'ubuntu-18.04'
+    steps:
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'current'
+          artifactName: 'WindowsWrapperBinary'
+          itemPattern: '*.dll'
+          targetPath: '$(Pipeline.Workspace)'
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'current'
+          artifactName: 'LinuxWrapperBinary'
+          itemPattern: '*.so'
+          targetPath: '$(Pipeline.Workspace)'
+      - task: CopyFiles@2
+        displayName: "Copy CPP Binaries"
+        inputs:
+          SourceFolder: '$(Pipeline.Workspace)'
+          Contents: |
+            *.dll
+            *.so
+          TargetFolder: '$(Pipeline.Workspace)\src\Pendleton.JsonSchemaValidator'
+          OverWrite: true
+      - task: DotNetCoreCLI@2
+        displayName: "Build Pendleton.JsonSchemaValidator"
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'  
+      - task: DotNetCoreCLI@2
+        displayName: "Run Tests"
+        inputs:
+          command: 'test'
+          projects: '**/*.csproj'
