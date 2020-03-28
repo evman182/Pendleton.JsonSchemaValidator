@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Extensions.ObjectPool;
 using NativeLibraryManager;
 
 namespace Pendleton.JsonSchemaValidator
@@ -17,8 +18,13 @@ namespace Pendleton.JsonSchemaValidator
         [DllImport("nlohmann_json_schema_validator")]
         private static extern bool Validate(IntPtr validator, string json, StringBuilder errors);
 
+        private static readonly ObjectPool<StringBuilder> StringBuilderPool;
+
         static JsonValidator()
         {
+            var objectPoolProvider = new DefaultObjectPoolProvider();
+            StringBuilderPool = objectPoolProvider.CreateStringBuilderPool();
+
             var accessor = new ResourceAccessor(Assembly.GetExecutingAssembly());
             var libManager = new LibraryManager(
                 Assembly.GetExecutingAssembly(),
@@ -38,10 +44,18 @@ namespace Pendleton.JsonSchemaValidator
 
         public bool Validate(string json, out string errors)
         {
-            var errorBuffer = new StringBuilder(100);
-            bool result = Validate(_validator, json, errorBuffer);
-            errors = errorBuffer.ToString();
-            return result;
+
+            StringBuilder errorBuffer = StringBuilderPool.Get();
+            try
+            {
+                bool result = Validate(_validator, json, errorBuffer);
+                errors = errorBuffer.ToString();
+                return result;
+            }
+            finally
+            {
+                StringBuilderPool.Return(errorBuffer);
+            }
         }
 
         ~JsonValidator()
