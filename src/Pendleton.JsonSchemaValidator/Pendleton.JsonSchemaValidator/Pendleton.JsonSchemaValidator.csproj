@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="libnlohmann_json_schema_validator.so" />
+    <None Remove="nlohmann_json_schema_validator.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="libnlohmann_json_schema_validator.so" />
+    <EmbeddedResource Include="nlohmann_json_schema_validator.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NativeLibraryManager" Version="1.0.18" />
+  </ItemGroup>
+
+</Project>

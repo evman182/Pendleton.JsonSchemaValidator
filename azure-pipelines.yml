@@ -1,0 +1,96 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+
+stages:
+- stage: "Build_CPP_Binaries"
+  jobs:
+  - job: Windows
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - script: |
+        git clone --depth 1 https://github.com/evman182/json-schema-validator.git
+        cd json-schema-validator
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -Dnlohmann_json_DIR=.. ..
+        cmake --build . --config Release
+      displayName: 'Build json-schema-validator'
+    - publish: $(System.DefaultWorkingDirectory)/json-schema-validator/build/release/
+      artifact: WindowsWrapperBinary
+  - job: Linux
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+    - script: |
+        git clone https://github.com/evman182/json-schema-validator.git
+        cd json-schema-validator
+        mkdir build
+        cd build
+        cmake -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -Dnlohmann_json_DIR=.. ..
+        cmake --build . --config Release
+        mkdir artifacts
+        cp libnlohmann_json_schema_validator.so ./artifacts
+      displayName: 'Build json-schema-validator'
+    - publish: $(System.DefaultWorkingDirectory)/json-schema-validator/build/artifacts/
+      artifact: LinuxWrapperBinary
+- stage: "Build_Pendleton_JsonSchemaValidator"
+  jobs:
+  - job: "Build"
+    pool: 
+      vmImage: 'windows-2019'
+    steps:
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'current'
+          artifactName: 'WindowsWrapperBinary'
+          itemPattern: '*.dll'
+          targetPath: '$(Pipeline.Workspace)'
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'current'
+          artifactName: 'LinuxWrapperBinary'
+          itemPattern: '*.so'
+          targetPath: '$(Pipeline.Workspace)'
+      - task: CopyFiles@2
+        displayName: "Copy CPP Binaries"
+        inputs:
+          SourceFolder: '$(Pipeline.Workspace)'
+          Contents: |
+            *.dll
+            *.so
+          TargetFolder: '$(Pipeline.Workspace)\src\Pendleton.JsonSchemaValidator'
+          OverWrite: true
+      - task: DotNetCoreCLI@2
+        displayName: "Build Pendleton.JsonSchemaValidator"
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'  
+      - task: DotNetCoreCLI@2
+        displayName: "Run Tests"
+        inputs:
+          command: 'test'
+          projects: '**/*.cspro'
+      - task: DotNetCoreCLI@2
+        displayName: "Create Package"
+        inputs:
+          command: 'pack'
+          packagesToPack: '**/Pendleton.JsonSchemaValidator.csproj'
+          nobuild: true
+          versioningScheme: 'byPrereleaseNumber'
+          majorVersion: '0'
+          minorVersion: '1'
+          patchVersion: '0'
+      - task: DotNetCoreCLI@2
+        displayName: "Push package to Azure"
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+          nuGetFeedType: 'internal'
+          publishVstsFeed: '7f4acbfe-6409-4555-962b-beaf9add995a/dd0a7f4e-a22a-4995-bf7e-250f97daaff2'
