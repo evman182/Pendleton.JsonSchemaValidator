@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pendleton.JsonSchemaValidator", "Pendleton.JsonSchemaValidator\Pendleton.JsonSchemaValidator.csproj", "{2D1C93FD-AC0E-4B87-AF42-9AB66A50380A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pendleton.JsonSchemaValidator", "Pendleton.JsonSchemaValidator\Pendleton.JsonSchemaValidator.csproj", "{2D1C93FD-AC0E-4B87-AF42-9AB66A50380A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pendleton.JsonSchemaValidator.Tests", "Pendleton.JsonSchemaValidator.Tests\Pendleton.JsonSchemaValidator.Tests.csproj", "{4D3F95BD-9D32-4E0B-9222-421107983214}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pendleton.JsonSchemaValidator.Tests", "Pendleton.JsonSchemaValidator.Tests\Pendleton.JsonSchemaValidator.Tests.csproj", "{4D3F95BD-9D32-4E0B-9222-421107983214}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

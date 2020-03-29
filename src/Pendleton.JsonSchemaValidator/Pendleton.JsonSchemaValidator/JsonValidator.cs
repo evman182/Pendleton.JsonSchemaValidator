@@ -10,13 +10,13 @@ namespace Pendleton.JsonSchemaValidator
     public class JsonValidator
     {
         [DllImport("nlohmann_json_schema_validator")]
-        private static extern IntPtr NewJsonValidator(string schema);
+        private static extern IntPtr NewJsonValidator([MarshalAs(UnmanagedType.LPUTF8Str)]string schema);
 
         [DllImport("nlohmann_json_schema_validator")]
         private static extern void DeleteJsonValidator(IntPtr validator);
 
         [DllImport("nlohmann_json_schema_validator")]
-        private static extern bool Validate(IntPtr validator, string json, StringBuilder errors);
+        private static extern bool Validate(IntPtr validator, [MarshalAs(UnmanagedType.LPUTF8Str)]string json, StringBuilder errors);
 
         private static readonly ObjectPool<StringBuilder> StringBuilderPool;
 
