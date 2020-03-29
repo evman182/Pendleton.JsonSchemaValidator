@@ -21,6 +21,9 @@ namespace Pendleton.JsonSchemaValidator.Tests.TestSuite
 		private static IEnumerable<object[]> _LoadSchemaJson(string draft)
 		{
 			var testsPath = Path.Combine(Directory.GetCurrentDirectory(), RootTestsFolder, $"{draft}\\");
+            testsPath = Environment.OSVersion.Platform == PlatformID.Unix
+                ? testsPath.Replace("\\", "/")
+                : testsPath.Replace("/", "\\");
 			if (!Directory.Exists(testsPath)) return Enumerable.Empty<object[]>();
 
 			var fileNames = Directory.GetFiles(testsPath, "*.json", SearchOption.AllDirectories);
