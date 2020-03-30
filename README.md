@@ -1,4 +1,4 @@
-# Pendleton.SchemaValidator
+# Pendleton.JsonSchemaValidator
 This horrible thing is a .Net Standard 2.1 wrapper around [my fork](https://github.com/evman182/json-schema-validator) of a much better project: https://github.com/pboettch/json-schema-validator  
   
 This should work on Windows and Linux right now. I'll work on Mac eventually.  
